@@ -45,8 +45,8 @@ ExecStartPre=-/usr/bin/<%= @docker_command %> kill <%= @sanitised_title %>
 ExecStart=/usr/bin/<%= @docker_command %> run \
         <%= @docker_run_flags %> \
         --name <%= @sanitised_title %> \
-        <%= @image %> \
-        <% if @command %> <%= @command %><% end %>
+        <%= @image %> <% if @command %>\<% end %>
+<% if @command %>        <%= @command %><% end %>
 <% else %>
 ExecStart=/usr/bin/<%= @docker_command %> start -a <%= @sanitised_title %>
 <% end -%>
