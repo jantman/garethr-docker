@@ -442,7 +442,7 @@ class docker(
   $service_hasrestart                = $docker::params::service_hasrestart,
 ) inherits docker::params {
 
-  validate_legacy('Stdlib::Compat::String', 'validate_string', $version)
+  validate_legacy('Stdlib::Compat::String', 'validate_string', $version, [])
   validate_legacy('Pattern[^(Debian|RedHat|Archlinux|Gentoo)$]', 'validate_re', $::osfamily, ['^(Debian|RedHat|Archlinux|Gentoo)$', 'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.'])
   validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_kernel, [])
   validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_package, [])
@@ -472,8 +472,7 @@ class docker(
   }
 
   if $log_driver {
-    validate_legacy('Pattern[^(none|json-file|syslog|journald|gelf|fluentd|splunk)$]', 'validate_re', $log_driver, ['^(none|json-file|syslog|journald|gelf|fluentd|splunk)$',
-                'log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk'])
+    validate_legacy('Pattern[^(none|json-file|syslog|journald|gelf|fluentd|splunk)$]', 'validate_re', $log_driver, ['^(none|json-file|syslog|journald|gelf|fluentd|splunk)$', 'log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk'])
   }
 
   if $selinux_enabled {
@@ -481,8 +480,7 @@ class docker(
   }
 
   if $storage_driver {
-    validate_legacy('Pattern[^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$]', 'validate_re', $storage_driver, ['^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$',
-                'Valid values for storage_driver are aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs.'])
+    validate_legacy('Pattern[^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$]', 'validate_re', $storage_driver, ['^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$', 'Valid values for storage_driver are aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs.'])
   }
 
   if $dm_fs {
