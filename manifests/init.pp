@@ -442,52 +442,51 @@ class docker(
   $service_hasrestart                = $docker::params::service_hasrestart,
 ) inherits docker::params {
 
-  validate_string($version)
-  validate_re($::osfamily, '^(Debian|RedHat|Archlinux|Gentoo)$',
-              'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
-  validate_bool($manage_kernel)
-  validate_bool($manage_package)
-  validate_bool($docker_cs)
-  validate_bool($manage_service)
-  validate_array($docker_users)
-  validate_array($daemon_environment_files)
-  validate_array($log_opt)
-  validate_bool($tls_enable)
-  validate_bool($ip_forward)
-  validate_bool($iptables)
-  validate_bool($ip_masq)
+  validate_legacy('Stdlib::Compat::String', 'validate_string', $version, [])
+  validate_legacy('Pattern[^(Debian|RedHat|Archlinux|Gentoo)$]', 'validate_re', $::osfamily, ['^(Debian|RedHat|Archlinux|Gentoo)$', 'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.'])
+  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_kernel, [])
+  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_package, [])
+  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $docker_cs, [])
+  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_service, [])
+  validate_legacy('Stdlib::Compat::Array', 'validate_array', $docker_users, [])
+  validate_legacy('Stdlib::Compat::Array', 'validate_array', $daemon_environment_files, [])
+  validate_legacy('Stdlib::Compat::Array', 'validate_array', $log_opt, [])
+  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $tls_enable, [])
+  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $ip_forward, [])
+  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $iptables, [])
+  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $ip_masq, [])
   if $icc != undef {
-    validate_bool($icc)
+    validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $icc, [])
   }
-  validate_string($bridge)
-  validate_string($fixed_cidr)
-  validate_string($default_gateway)
-  validate_string($bip)
+  validate_legacy('Stdlib::Compat::String', 'validate_string', $bridge, [])
+  validate_legacy('Stdlib::Compat::String', 'validate_string', $fixed_cidr, [])
+  validate_legacy('Stdlib::Compat::String', 'validate_string', $default_gateway, [])
+  validate_legacy('Stdlib::Compat::String', 'validate_string', $bip, [])
 
   if ($default_gateway) and (!$bridge) {
     fail('You must provide the $bridge parameter.')
   }
 
   if $log_level {
-    validate_re($log_level, '^(debug|info|warn|error|fatal)$', 'log_level must be one of debug, info, warn, error or fatal')
+    validate_legacy('Pattern[^(debug|info|warn|error|fatal)$]', 'validate_re', $log_level, ['^(debug|info|warn|error|fatal)$', 'log_level must be one of debug, info, warn, error or fatal'])
   }
 
   if $log_driver {
-    validate_re($log_driver, '^(none|json-file|syslog|journald|gelf|fluentd|splunk)$',
-                'log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk')
+    validate_legacy('Pattern[^(none|json-file|syslog|journald|gelf|fluentd|splunk)$]', 'validate_re', $log_driver, ['^(none|json-file|syslog|journald|gelf|fluentd|splunk)$',
+                'log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk'])
   }
 
   if $selinux_enabled {
-    validate_re($selinux_enabled, '^(true|false)$', 'selinux_enabled must be true or false')
+    validate_legacy('Pattern[^(true|false)$]', 'validate_re', $selinux_enabled, ['^(true|false)$', 'selinux_enabled must be true or false'])
   }
 
   if $storage_driver {
-    validate_re($storage_driver, '^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$',
-                'Valid values for storage_driver are aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs.' )
+    validate_legacy('Pattern[^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$]', 'validate_re', $storage_driver, ['^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$',
+                'Valid values for storage_driver are aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs.'])
   }
 
   if $dm_fs {
-    validate_re($dm_fs, '^(ext4|xfs)$', 'Only ext4 and xfs are supported currently for dm_fs.')
+    validate_legacy('Pattern[^(ext4|xfs)$]', 'validate_re', $dm_fs, ['^(ext4|xfs)$', 'Only ext4 and xfs are supported currently for dm_fs.'])
   }
 
   if ($dm_loopdatasize or $dm_loopmetadatasize) and ($dm_datadev or $dm_metadatadev) {
@@ -515,9 +514,9 @@ class docker(
     if(!$tcp_bind) {
         fail('You need to provide tcp bind parameter for TLS.')
     }
-    validate_string($tls_cacert)
-    validate_string($tls_cert)
-    validate_string($tls_key)
+    validate_legacy('Stdlib::Compat::String', 'validate_string', $tls_cacert, [])
+    validate_legacy('Stdlib::Compat::String', 'validate_string', $tls_cert, [])
+    validate_legacy('Stdlib::Compat::String', 'validate_string', $tls_key, [])
   }
 
   class { 'docker::repos': }
