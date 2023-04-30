@@ -345,7 +345,7 @@
 #   Extend the pool by specified percentage when threshold is hit.
 #
 class docker(
-  $version                           = $docker::params::version,
+  String $version                    = $docker::params::version,
   $ensure                            = $docker::params::ensure,
   $prerequired_packages              = $docker::params::prerequired_packages,
   $docker_cs                         = $docker::params::docker_cs,
@@ -442,7 +442,6 @@ class docker(
   $service_hasrestart                = $docker::params::service_hasrestart,
 ) inherits docker::params {
 
-  validate_legacy('Stdlib::Compat::String', 'validate_string', $version, [])
   validate_legacy('Pattern[/^(Debian|RedHat|Archlinux|Gentoo)$/]', 'validate_re', $::osfamily, ['^(Debian|RedHat|Archlinux|Gentoo)$', 'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.'])
   validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_kernel, [])
   validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_package, [])
