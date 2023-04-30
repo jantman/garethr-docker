@@ -345,7 +345,7 @@
 #   Extend the pool by specified percentage when threshold is hit.
 #
 class docker(
-  String $version                    = $docker::params::version,
+  Optional[String] $version          = $docker::params::version,
   $ensure                            = $docker::params::ensure,
   $prerequired_packages              = $docker::params::prerequired_packages,
   $docker_cs                         = $docker::params::docker_cs,
