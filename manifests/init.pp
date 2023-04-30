@@ -362,7 +362,7 @@ class docker(
   Optional[String] $bip              = $docker::params::bip,
   $mtu                               = $docker::params::mtu,
   Boolean $iptables                  = $docker::params::iptables,
-  Optional[Bool] $icc                = $docker::params::icc,
+  Optional[Boolean] $icc             = $docker::params::icc,
   $socket_bind                       = $docker::params::socket_bind,
   Optional[String] $fixed_cidr       = $docker::params::fixed_cidr,
   Optional[String] $bridge           = $docker::params::bridge,
