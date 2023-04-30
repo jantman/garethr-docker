@@ -442,7 +442,7 @@ class docker(
   $service_hasrestart                = $docker::params::service_hasrestart,
 ) inherits docker::params {
 
-  validate_legacy('Stdlib::Compat::String', 'validate_string', $version, [])
+  validate_legacy('Stdlib::Compat::String', 'validate_string', $version)
   validate_legacy('Pattern[^(Debian|RedHat|Archlinux|Gentoo)$]', 'validate_re', $::osfamily, ['^(Debian|RedHat|Archlinux|Gentoo)$', 'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.'])
   validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_kernel, [])
   validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_package, [])
