@@ -371,7 +371,7 @@ class docker(
   Optional[Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk)$/]] $log_driver                        = $docker::params::log_driver,
   Array $log_opt                     = $docker::params::log_opt,
   Optional[Pattern[/^(true|false)$/]] $selinux_enabled                   = $docker::params::selinux_enabled,
-  $use_upstream_package_source       = $docker::params::use_upstream_package_source,
+  Boolean $use_upstream_package_source = $docker::params::use_upstream_package_source,
   $pin_upstream_package_source       = $docker::params::pin_upstream_package_source,
   $apt_source_pin_level              = $docker::params::apt_source_pin_level,
   $package_source_location           = $docker::params::package_source_location,

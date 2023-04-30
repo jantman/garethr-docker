@@ -91,7 +91,7 @@ define docker::run(
   $detach = undef,
   $extra_parameters = undef,
   $systemd_restart = 'on-failure',
-  $extra_systemd_parameters = {},
+  Hash $extra_systemd_parameters = {},
   $pull_on_start = false,
   $after = [],
   $after_service = [],
@@ -107,7 +107,7 @@ define docker::run(
   $remove_container_on_stop = true,
   $remove_volume_on_start = false,
   $remove_volume_on_stop = false,
-  $stop_wait_time = 0,
+  Integer $stop_wait_time = 0,
   $syslog_identifier = undef,
 ) {
   include docker::params
@@ -152,8 +152,6 @@ define docker::run(
   validate_bool($remove_volume_on_stop)
   validate_bool($use_name)
 
-  validate_integer($stop_wait_time)
-
   if ($remove_volume_on_start and !$remove_container_on_start) {
     fail("In order to remove the volume on start for ${title} you need to also remove the container")
   }
@@ -169,7 +167,6 @@ define docker::run(
     }
   }
 
-  validate_hash($extra_systemd_parameters)
   if $systemd_restart {
     validate_re($systemd_restart, '^(no|always|on-success|on-failure|on-abnormal|on-abort|on-watchdog)$')
   }
