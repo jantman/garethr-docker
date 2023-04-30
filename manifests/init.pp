@@ -348,29 +348,29 @@ class docker(
   Optional[String] $version          = $docker::params::version,
   $ensure                            = $docker::params::ensure,
   $prerequired_packages              = $docker::params::prerequired_packages,
-  $docker_cs                         = $docker::params::docker_cs,
+  Bool $docker_cs                    = $docker::params::docker_cs,
   $package_cs_source_location        = $docker::params::package_cs_source_location,
   $package_cs_key_source             = $docker::params::package_cs_key_source,
   $tcp_bind                          = $docker::params::tcp_bind,
-  $tls_enable                        = $docker::params::tls_enable,
+  Bool $tls_enable                   = $docker::params::tls_enable,
   $tls_verify                        = $docker::params::tls_verify,
-  $tls_cacert                        = $docker::params::tls_cacert,
-  $tls_cert                          = $docker::params::tls_cert,
-  $tls_key                           = $docker::params::tls_key,
-  $ip_forward                        = $docker::params::ip_forward,
-  $ip_masq                           = $docker::params::ip_masq,
-  $bip                               = $docker::params::bip,
+  Optional[String] $tls_cacert       = $docker::params::tls_cacert,
+  Optional[String] $tls_cert         = $docker::params::tls_cert,
+  Optional[String] $tls_key          = $docker::params::tls_key,
+  Bool $ip_forward                   = $docker::params::ip_forward,
+  Bool $ip_masq                      = $docker::params::ip_masq,
+  Optional[String] $bip              = $docker::params::bip,
   $mtu                               = $docker::params::mtu,
-  $iptables                          = $docker::params::iptables,
-  $icc                               = $docker::params::icc,
+  Bool $iptables                     = $docker::params::iptables,
+  Optional[Bool] $icc                = $docker::params::icc,
   $socket_bind                       = $docker::params::socket_bind,
-  $fixed_cidr                        = $docker::params::fixed_cidr,
-  $bridge                            = $docker::params::bridge,
-  $default_gateway                   = $docker::params::default_gateway,
-  $log_level                         = $docker::params::log_level,
-  $log_driver                        = $docker::params::log_driver,
-  $log_opt                           = $docker::params::log_opt,
-  $selinux_enabled                   = $docker::params::selinux_enabled,
+  Optional[String] $fixed_cidr       = $docker::params::fixed_cidr,
+  Optional[String] $bridge           = $docker::params::bridge,
+  Optional[String] $default_gateway  = $docker::params::default_gateway,
+  Optional[Pattern[/^(debug|info|warn|error|fatal)$/]] $log_level                         = $docker::params::log_level,
+  Optional[Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk)$/]] $log_driver                        = $docker::params::log_driver,
+  Array $log_opt                     = $docker::params::log_opt,
+  Optional[Pattern[/^(true|false)$/]] $selinux_enabled                   = $docker::params::selinux_enabled,
   $use_upstream_package_source       = $docker::params::use_upstream_package_source,
   $pin_upstream_package_source       = $docker::params::pin_upstream_package_source,
   $apt_source_pin_level              = $docker::params::apt_source_pin_level,
@@ -381,10 +381,10 @@ class docker(
   $package_key_source                = $docker::params::package_key_source,
   $service_state                     = $docker::params::service_state,
   $service_enable                    = $docker::params::service_enable,
-  $manage_service                    = $docker::params::manage_service,
+  Bool $manage_service               = $docker::params::manage_service,
   $root_dir                          = $docker::params::root_dir,
   $tmp_dir                           = $docker::params::tmp_dir,
-  $manage_kernel                     = $docker::params::manage_kernel,
+  Bool $manage_kernel                = $docker::params::manage_kernel,
   $dns                               = $docker::params::dns,
   $dns_search                        = $docker::params::dns_search,
   $socket_group                      = $docker::params::socket_group,
@@ -393,9 +393,9 @@ class docker(
   $shell_values                      = undef,
   $proxy                             = $docker::params::proxy,
   $no_proxy                          = $docker::params::no_proxy,
-  $storage_driver                    = $docker::params::storage_driver,
+  Optional[Pattern[/^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$/]] $storage_driver                    = $docker::params::storage_driver,
   $dm_basesize                       = $docker::params::dm_basesize,
-  $dm_fs                             = $docker::params::dm_fs,
+  Optional[Pattern[/^(ext4|xfs)$/]] $dm_fs                             = $docker::params::dm_fs,
   $dm_mkfsarg                        = $docker::params::dm_mkfsarg,
   $dm_mountopt                       = $docker::params::dm_mountopt,
   $dm_blocksize                      = $docker::params::dm_blocksize,
@@ -409,16 +409,16 @@ class docker(
   $dm_blkdiscard                     = $docker::params::dm_blkdiscard,
   $dm_override_udev_sync_check       = $docker::params::dm_override_udev_sync_check,
   $execdriver                        = $docker::params::execdriver,
-  $manage_package                    = $docker::params::manage_package,
+  Bool $manage_package               = $docker::params::manage_package,
   $package_source                    = $docker::params::package_source,
   $manage_epel                       = $docker::params::manage_epel,
   $package_name                      = $docker::params::package_name,
   $service_name                      = $docker::params::service_name,
   $docker_command                    = $docker::params::docker_command,
   $daemon_subcommand                 = $docker::params::daemon_subcommand,
-  $docker_users                      = [],
+  Array $docker_users                = [],
   $docker_group                      = $docker::params::docker_group,
-  $daemon_environment_files          = [],
+  Array $daemon_environment_files    = [],
   $repo_opt                          = $docker::params::repo_opt,
   $nowarn_kernel                     = $docker::params::nowarn_kernel,
   $storage_devs                      = $docker::params::storage_devs,
@@ -442,48 +442,12 @@ class docker(
   $service_hasrestart                = $docker::params::service_hasrestart,
 ) inherits docker::params {
 
-  validate_legacy('Pattern[/^(Debian|RedHat|Archlinux|Gentoo)$/]', 'validate_re', $::osfamily, ['^(Debian|RedHat|Archlinux|Gentoo)$', 'This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.'])
-  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_kernel, [])
-  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_package, [])
-  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $docker_cs, [])
-  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $manage_service, [])
-  validate_legacy('Stdlib::Compat::Array', 'validate_array', $docker_users, [])
-  validate_legacy('Stdlib::Compat::Array', 'validate_array', $daemon_environment_files, [])
-  validate_legacy('Stdlib::Compat::Array', 'validate_array', $log_opt, [])
-  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $tls_enable, [])
-  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $ip_forward, [])
-  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $iptables, [])
-  validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $ip_masq, [])
-  if $icc != undef {
-    validate_legacy('Stdlib::Compat::Bool', 'validate_bool', $icc, [])
+  if ($::osfamily !~ /^(Debian|RedHat|Archlinux|Gentoo)$/) {
+    fail('This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
   }
-  validate_legacy('Stdlib::Compat::String', 'validate_string', $bridge, [])
-  validate_legacy('Stdlib::Compat::String', 'validate_string', $fixed_cidr, [])
-  validate_legacy('Stdlib::Compat::String', 'validate_string', $default_gateway, [])
-  validate_legacy('Stdlib::Compat::String', 'validate_string', $bip, [])
 
   if ($default_gateway) and (!$bridge) {
     fail('You must provide the $bridge parameter.')
-  }
-
-  if $log_level {
-    validate_legacy('Pattern[/^(debug|info|warn|error|fatal)$/]', 'validate_re', $log_level, ['^(debug|info|warn|error|fatal)$', 'log_level must be one of debug, info, warn, error or fatal'])
-  }
-
-  if $log_driver {
-    validate_legacy('Pattern[/^(none|json-file|syslog|journald|gelf|fluentd|splunk)$/]', 'validate_re', $log_driver, ['^(none|json-file|syslog|journald|gelf|fluentd|splunk)$', 'log_driver must be one of none, json-file, syslog, journald, gelf, fluentd or splunk'])
-  }
-
-  if $selinux_enabled {
-    validate_legacy('Pattern[/^(true|false)$/]', 'validate_re', $selinux_enabled, ['^(true|false)$', 'selinux_enabled must be true or false'])
-  }
-
-  if $storage_driver {
-    validate_legacy('Pattern[/^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$/]', 'validate_re', $storage_driver, ['^(aufs|devicemapper|btrfs|overlay|overlay2|vfs|zfs)$', 'Valid values for storage_driver are aufs, devicemapper, btrfs, overlay, overlay2, vfs, zfs.'])
-  }
-
-  if $dm_fs {
-    validate_legacy('Pattern[/^(ext4|xfs)$/]', 'validate_re', $dm_fs, ['^(ext4|xfs)$', 'Only ext4 and xfs are supported currently for dm_fs.'])
   }
 
   if ($dm_loopdatasize or $dm_loopmetadatasize) and ($dm_datadev or $dm_metadatadev) {
@@ -511,9 +475,6 @@ class docker(
     if(!$tcp_bind) {
         fail('You need to provide tcp bind parameter for TLS.')
     }
-    validate_legacy('Stdlib::Compat::String', 'validate_string', $tls_cacert, [])
-    validate_legacy('Stdlib::Compat::String', 'validate_string', $tls_cert, [])
-    validate_legacy('Stdlib::Compat::String', 'validate_string', $tls_key, [])
   }
 
   class { 'docker::repos': }
