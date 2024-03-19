@@ -41,7 +41,7 @@ Puppet::Type.type(:docker_network).provide(:ruby) do
 			_, name, driver = line.split(' ')
 			inspect = docker(['network', 'inspect', name])
 			obj = JSON.parse(inspect).first
-			subnet = unless obj['IPAM']['Config'].empty?
+			subnet = unless (obj['IPAM']['Config'].nil? || obj['IPAM']['Config'].empty?)
 				if obj['IPAM']['Config'].first.key? 'Subnet'
 					obj['IPAM']['Config'].first['Subnet']
 				end
