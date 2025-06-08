@@ -112,7 +112,7 @@ class docker::service (
   $tls_key                           = $docker::tls_key,
 ) {
 
-  unless $::osfamily =~ /(Debian|RedHat|Archlinux|Gentoo)/ {
+  unless $facts['os']['family'] =~ /(Debian|RedHat|Archlinux|Gentoo)/ {
     fail('The docker::service class needs a Debian, RedHat, Archlinux or Gentoo based system.')
   }
 
@@ -125,7 +125,7 @@ class docker::service (
   if $service_config {
     $_service_config = $service_config
   } else {
-    if ($::osfamily == 'Debian' and $service_config != false) {
+    if ($facts['os']['family'] == 'Debian' and $service_config != false) {
       $_service_config = "/etc/default/${service_name}"
     }
   }
@@ -135,7 +135,7 @@ class docker::service (
     default => [],
   }
 
-  if $::osfamily == 'RedHat' {
+  if $facts['os']['family'] == 'RedHat' {
     file { $storage_setup_file:
       ensure  => present,
       force   => true,

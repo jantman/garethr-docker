@@ -205,12 +205,12 @@ define docker::run(
     }
   } else {
 
-    case $::osfamily {
+    case $facts['os']['family'] {
       'Debian': {
         $deprecated_initscript = "/etc/init/${service_prefix}${sanitised_title}.conf"
         $hasstatus  = true
-        if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
-          ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
+        if ($facts['os']['name'] == 'Debian' and versioncmp($facts['os']['release']['major'], '8') >= 0) or
+          ($facts['os']['name'] == 'Ubuntu' and versioncmp($facts['os']['release']['full'], '15.04') >= 0) {
           $initscript = "/etc/systemd/system/${service_prefix}${sanitised_title}.service"
           $init_template = 'docker/etc/systemd/system/docker-run.erb'
           $uses_systemd = true
@@ -223,7 +223,7 @@ define docker::run(
         }
       }
       'RedHat': {
-        if ($::operatingsystem == 'Amazon') or (versioncmp($::operatingsystemrelease, '7.0') < 0) {
+        if ($facts['os']['name'] == 'Amazon') or (versioncmp($facts['os']['release']['full'], '7.0') < 0) {
           $initscript     = "/etc/init.d/${service_prefix}${sanitised_title}"
           $init_template  = 'docker/etc/init.d/docker-run.erb'
           $hasstatus      = undef

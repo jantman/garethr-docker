@@ -13,10 +13,10 @@ class docker::install {
     $ensure = $docker::ensure
   }
 
-  case $::osfamily {
+  case $facts['os']['family'] {
     'Debian': {
-      if $::operatingsystem == 'Ubuntu' {
-        case $::operatingsystemrelease {
+      if $facts['os']['name'] == 'Ubuntu' {
+        case $facts['os']['release']['full'] {
           # On Ubuntu 12.04 (precise) install the backported 13.10 (saucy) kernel
           '12.04': { $kernelpackage = [
                                         'linux-image-generic-lts-trusty',
@@ -24,8 +24,8 @@ class docker::install {
                                       ]
           }
           # determine the package name for 'linux-image-extra-$(uname -r)' based
-          # on the $::kernelrelease fact
-          default: { $kernelpackage = "linux-image-extra-${::kernelrelease}" }
+          # on the $facts['kernelrelease'] fact
+          default: { $kernelpackage = "linux-image-extra-${facts['kernelrelease']}" }
         }
         $manage_kernel = $docker::manage_kernel
       } else {
@@ -34,12 +34,12 @@ class docker::install {
       }
     }
     'RedHat': {
-      if $::operatingsystem == 'Amazon' {
-        if versioncmp($::operatingsystemrelease, '3.10.37-47.135') < 0 {
+      if $facts['os']['name'] == 'Amazon' {
+        if versioncmp($facts['os']['release']['full'], '3.10.37-47.135') < 0 {
           fail('Docker needs Amazon version to be at least 3.10.37-47.135.')
         }
       }
-      elsif versioncmp($::operatingsystemrelease, '6.5') < 0 {
+      elsif versioncmp($facts['os']['release']['full'], '6.5') < 0 {
         fail('Docker needs RedHat/CentOS version to be at least 6.5.')
       }
       $manage_kernel = false
@@ -76,7 +76,7 @@ class docker::install {
     }
 
     if $docker::package_source {
-      case $::osfamily {
+      case $facts['os']['family'] {
         'Debian' : {
           $pk_provider = 'dpkg'
         }

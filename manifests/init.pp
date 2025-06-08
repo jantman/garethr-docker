@@ -442,7 +442,7 @@ class docker(
   $service_hasrestart                = $docker::params::service_hasrestart,
 ) inherits docker::params {
 
-  if ($::osfamily !~ /^(Debian|RedHat|Archlinux|Gentoo)$/) {
+  if ($facts['os']['family'] !~ /^(Debian|RedHat|Archlinux|Gentoo)$/) {
     fail('This module only works on Debian or Red Hat based systems or on Archlinux as on Gentoo.')
   }
 

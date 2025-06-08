@@ -45,7 +45,7 @@ class docker::compose(
     exec { "Install Docker Compose ${version}":
       path    => '/usr/bin/',
       cwd     => '/tmp',
-      command => "curl -s -L ${proxy_opt} https://github.com/docker/compose/releases/download/${version}/docker-compose-${::kernel}-x86_64 > ${install_path}/docker-compose-${version}",
+      command => "curl -s -L ${proxy_opt} https://github.com/docker/compose/releases/download/${version}/docker-compose-${facts['kernel']}-x86_64 > ${install_path}/docker-compose-${version}",
       creates => "${install_path}/docker-compose-${version}",
       require => Package['curl'],
     }

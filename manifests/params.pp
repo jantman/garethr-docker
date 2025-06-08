@@ -75,12 +75,12 @@ class docker::params {
   $compose_version                   = '1.9.0'
   $compose_install_path              = '/usr/local/bin'
 
-  case $::osfamily {
+  case $facts['os']['family'] {
     'Debian' : {
-      case $::operatingsystem {
+      case $facts['os']['name'] {
         'Ubuntu' : {
           $package_release = "ubuntu-${::lsbdistcodename}"
-          if (versioncmp($::operatingsystemrelease, '15.04') >= 0) {
+          if (versioncmp($facts['os']['release']['full'], '15.04') >= 0) {
             $service_provider        = 'systemd'
             $storage_config          = '/etc/default/docker-storage'
             $service_config_template = 'docker/etc/sysconfig/docker.systemd.erb'
@@ -99,7 +99,7 @@ class docker::params {
         }
         default: {
           $package_release = "debian-${::lsbdistcodename}"
-          if (versioncmp($::operatingsystemmajrelease, '8') >= 0) {
+          if (versioncmp($facts['os']['release']['major'], '8') >= 0) {
             $service_provider           = 'systemd'
             $storage_config             = '/etc/default/docker-storage'
             $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
@@ -139,8 +139,8 @@ class docker::params {
       $package_key_source = 'https://apt.dockerproject.org/gpg'
       $package_key = '58118E89F3A912897C070ADBF76221572C52609D'
 
-      if ($::operatingsystem == 'Debian' and versioncmp($::operatingsystemmajrelease, '8') >= 0) or
-        ($::operatingsystem == 'Ubuntu' and versioncmp($::operatingsystemrelease, '15.04') >= 0) {
+      if ($facts['os']['name'] == 'Debian' and versioncmp($facts['os']['release']['major'], '8') >= 0) or
+        ($facts['os']['name'] == 'Ubuntu' and versioncmp($facts['os']['release']['full'], '15.04') >= 0) {
         $detach_service_in_init = false
       } else {
         $detach_service_in_init = true
@@ -154,7 +154,7 @@ class docker::params {
       $service_hasstatus  = true
       $service_hasrestart = true
 
-      if ($::operatingsystem == 'Fedora') or (versioncmp($::operatingsystemrelease, '7.0') >= 0) and $::operatingsystem != 'Amazon' {
+      if ($facts['os']['name'] == 'Fedora') or (versioncmp($facts['os']['release']['full'], '7.0') >= 0) and $facts['os']['name'] != 'Amazon' {
         $service_provider           = 'systemd'
         $service_config_template    = 'docker/etc/sysconfig/docker.systemd.erb'
         $service_overrides_template = 'docker/etc/systemd/system/docker.service.d/service-overrides-rhel.conf.erb'
@@ -164,11 +164,11 @@ class docker::params {
         $service_overrides_template = undef
       }
 
-      if (versioncmp($::operatingsystemrelease, '7.0') < 0) and $::operatingsystem != 'Amazon' {
+      if (versioncmp($facts['os']['release']['full'], '7.0') < 0) and $facts['os']['name'] != 'Amazon' {
         $package_name = 'docker-io'
         $use_upstream_package_source = false
         $manage_epel = true
-      } elsif $::operatingsystem == 'Amazon' {
+      } elsif $facts['os']['name'] == 'Amazon' {
         $package_name = 'docker'
         $use_upstream_package_source = false
         $manage_epel = false
@@ -178,7 +178,7 @@ class docker::params {
         $manage_epel = false
       }
       $package_key_source = 'https://yum.dockerproject.org/gpg'
-      if $::operatingsystem == 'Fedora' {
+      if $facts['os']['name'] == 'Fedora' {
         $package_source_location = "https://yum.dockerproject.org/repo/main/fedora/${::operatingsystemmajrelease}"
       } else {
         $package_source_location = "https://yum.dockerproject.org/repo/main/centos/${::operatingsystemmajrelease}"
@@ -193,9 +193,9 @@ class docker::params {
       $apt_source_pin_level = undef
       $service_name = $service_name_default
       $docker_command = $docker_command_default
-      if (versioncmp($::operatingsystemrelease, '7.0') < 0) or ($::operatingsystem == 'Amazon') {
+      if (versioncmp($facts['os']['release']['full'], '7.0') < 0) or ($facts['os']['name'] == 'Amazon') {
         $detach_service_in_init = true
-        if $::operatingsystem == 'OracleLinux' {
+        if $facts['os']['name'] == 'OracleLinux' {
           $docker_group = 'dockerroot'
         } else {
           $docker_group = $docker_group_default
@@ -211,25 +211,25 @@ class docker::params {
       }
 
       # repo_opt to specify install_options for docker package
-      if (versioncmp($::operatingsystemmajrelease, '7') == 0) {
-        if $::operatingsystem == 'RedHat' {
+      if (versioncmp($facts['os']['release']['major'], '7') == 0) {
+        if $facts['os']['name'] == 'RedHat' {
           $repo_opt = '--enablerepo=rhel7-extras'
-        } elsif $::operatingsystem == 'CentOS' {
+        } elsif $facts['os']['name'] == 'CentOS' {
           $repo_opt = '--enablerepo=extras'
-        } elsif $::operatingsystem == 'OracleLinux' {
+        } elsif $facts['os']['name'] == 'OracleLinux' {
           $repo_opt = '--enablerepo=ol7_addons'
-        } elsif $::operatingsystem == 'Scientific' {
+        } elsif $facts['os']['name'] == 'Scientific' {
           $repo_opt = ''
         } else {
           $repo_opt = undef
         }
-      } elsif (versioncmp($::operatingsystemrelease, '7.0') < 0 and $::operatingsystem == 'OracleLinux') {
+      } elsif (versioncmp($facts['os']['release']['full'], '7.0') < 0 and $facts['os']['name'] == 'OracleLinux') {
           # FIXME is 'public_ol6_addons' available on all OL6 installs?
           $repo_opt = '--enablerepo=public_ol6_addons,public_ol6_latest'
       } else {
         $repo_opt = undef
       }
-      if $::kernelversion == '2.6.32' {
+      if $facts['kernelversion'] == '2.6.32' {
         $nowarn_kernel = true
       } else {
         $nowarn_kernel = false
@@ -326,8 +326,8 @@ class docker::params {
   # Special extra packages are required on some OSes.
   # Specifically apparmor is needed for Ubuntu:
   # https://github.com/docker/docker/issues/4734
-  $prerequired_packages = $::osfamily ? {
-    'Debian' => $::operatingsystem ? {
+  $prerequired_packages = $facts['os']['family'] ? {
+    'Debian' => $facts['os']['name'] ? {
       'Debian' => ['cgroupfs-mount'],
       'Ubuntu' => ['cgroup-lite', 'apparmor'],
       default  => [],
