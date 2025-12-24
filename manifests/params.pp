@@ -98,7 +98,7 @@ class docker::params {
           }
         }
         default: {
-          $package_release = "debian-${::lsbdistcodename}"
+          $package_release = "debian-${facts['os']['distro']['codename']}"
           if (versioncmp($facts['os']['release']['major'], '8') >= 0) {
             $service_provider           = 'systemd'
             $storage_config             = '/etc/default/docker-storage'
